@@ -23,3 +23,17 @@ LPCTSTR Sprite::image_name(int value)
 	default:return 0;
 	}
 }
+
+void Sprite::set_position(Position p,bool is_tail)
+{
+	int x = 0;
+	int y = 0;
+	if (is_tail)
+	{
+		m_position.to_plotting(x, y);
+		clearrectangle(x, y, x + Position::LOGIC_TO_PIXEL_FACTOR, y + Position::LOGIC_TO_PIXEL_FACTOR);
+	}
+	m_position = p;
+	m_position.to_plotting(x, y);
+	putimage(x, y, &m_img);
+}

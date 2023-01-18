@@ -18,8 +18,29 @@ int main()
 	static const int screen_height = Position::LOGIC_TO_PIXEL_FACTOR * Map::HEIGHT;
 	initgraph(screen_width,screen_height);
 	Map m;
+	ExMessage msg;//创建消息变量
 	while (true)
 	{
+		bool b = peekmessage(&msg, EX_KEY);
+		if (b && msg.message == WM_KEYDOWN)
+		{
+			if (msg.vkcode == Map::KEY_W)
+			{
+				m.set_direction(Up);
+			}
+			if (msg.vkcode == Map::KEY_S)
+			{
+				m.set_direction(Down);
+			}
+			if (msg.vkcode == Map::KEY_A)
+			{
+				m.set_direction(Left);
+			}
+			if (msg.vkcode == Map::KEY_D)
+			{
+				m.set_direction(Right);
+			}
+		}
 		long long currentMS = Time::CurrentTime();
 		if (currentMS - Time::UpdateMS < Time::FrameMS)
 		{
