@@ -1,7 +1,11 @@
 #include"Map.h"
 #include"Time.h"
+#include<string>
 #include<iostream>
 #include<cmath>
+#include<windows.h>
+#include<Mmsystem.h>
+#pragma comment(lib,"winmm.lib")
 using namespace std;
 
 Map::Map()
@@ -11,6 +15,7 @@ Map::Map()
 	init_snake();
 	init_food();
 	direction = Right;
+	is_over = false;
 }
 
 //获取蛇的当前移动方向对应的移动偏移量
@@ -37,7 +42,7 @@ std::pair<int, int> Map::get_offset()
 //设置蛇的移动方向
 void Map::set_direction(Direction d)
 {
-	cout << "尝试修改方向为：" << d << endl;
+	//如果方向已经被改变
 	if (direction_is_changed == true)
 	{
 		return;
@@ -69,23 +74,114 @@ void Map::set_direction(Direction d)
 
 void Map::SnakeMove()
 {
-	cout << "蛇走"<<gap << endl;
+	direction_is_changed = false;
+	//得到蛇头前方位置
+	std::pair<int, int> offset = get_offset();
+	Position p1 = snake[0].get_position();
+	p1.x += offset.first;
+	p1.y += offset.second;
+
+	//前面是苹果
+	if (p1.x == food.get_position().x && p1.y == food.get_position().y)
+	{
+		Eat();
+		return; 
+	}
+
+	//前面是墙体
+	if (!p1.is_valid())
+	{
+		Dead();
+		return;
+	}
+	
+	//前面是身体
+	for (int i = 1; i <= snake.size() - 1; i++)
+	{
+		if (snake[i].get_position().x == p1.x && snake[i].get_position().y == p1.y)
+		{
+			Dead();
+			return;
+		}
+	}
+
+	//前面是空地
+	Move();
+}
+
+//死亡
+void Map::Dead()
+{
+	int x= Position::LOGIC_TO_PIXEL_FACTOR * Map::WIDTH/2;
+	int y=Position::LOGIC_TO_PIXEL_FACTOR * Map::HEIGHT/2;
+	//字体颜色为粉色
+	COLORREF color = RGB(255, 105, 180);
+	settextcolor(color);
+	settextstyle(64, 0, _T("Consolas"));
+	int w=textwidth(" GAME OVER !");
+	int h=textheight(" GAME OVER !");
+	//显示字体 "GAME OVER!"
+	outtextxy(x-w/2,y-h/2, " GAME OVER !");
+	is_over = true;
+}
+
+void Map::Move()
+{
 	//身体移动
 	for (int i = snake.size() - 1; i > 0; i--)
 	{
 		bool is_tail = i == snake.size() - 1;
-		snake[i].set_position(snake[i - 1].m_position,is_tail);
+		snake[i].set_position(snake[i - 1].m_position, is_tail);
 	}
 	// 蛇头移动
 	std::pair<int, int> offset = get_offset();
 	Position p1 = snake[0].get_position();
 	p1.x += offset.first;
 	p1.y += offset.second;
+	snake[0].set_position(p1, false);
+}
+
+void Map::play_sound()
+{
+	int audio = rand() % 3;
+	switch (audio)
+	{
+	case 0:PlaySound(("C:/D/GitHub/Snake/Snake/Snake/sound/eat1.wav"), NULL, SND_FILENAME | SND_ASYNC); break;
+	case 1:PlaySound(("C:/D/GitHub/Snake/Snake/Snake/sound/eat2.wav"), NULL, SND_FILENAME | SND_ASYNC); break;
+	case 2:PlaySound(("C:/D/GitHub/Snake/Snake/Snake/sound/eat3.wav"), NULL, SND_FILENAME | SND_ASYNC); break;
+	}
+}
+
+//吃食物
+void Map::Eat()
+{
+	play_sound();
+	std::pair<int, int> offset = get_offset();
+	Position p1 = snake[0].get_position();
+	Position a;
+	a.x = p1.x;
+	a.y = p1.y;
+	p1.x += offset.first;
+	p1.y += offset.second;
 	snake[0].set_position(p1,false);
-	direction_is_changed = false;
+
+	Sprite body;
+	Position p;
+	p.x = a.x;
+	p.y = a.y;
+	body.init(Sprite::SNAKE_BODY, p);
+	vector<Sprite>::iterator i = snake.begin();
+	i++;
+	snake.insert(i, body);
+	gap -= SNAKE_MOVE_GAP_SUB;
+	init_food();
 }
 void Map::update()
 {
+	if (is_over)
+	{
+		return;
+	}
 	if (Time::UpdateMS - moveMS < gap)
 	{
 		return;
@@ -143,7 +239,6 @@ void Map::init_food()
 			break;
 		}
 	}
-	Sprite food;
 	Position p;
 	p.x = x;
 	p.y = y;
