@@ -25,6 +25,4 @@ public:
 	//ªÒ»°Œª÷√
 	Position get_position() { return m_position; }
 	void set_position(Position p,bool is_tail);
-
-
 };

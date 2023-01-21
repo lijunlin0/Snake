@@ -66,6 +66,4 @@ private:
 	void Move();
 	//播放吃食物音效
 	void play_sound();
-	
-
 };
