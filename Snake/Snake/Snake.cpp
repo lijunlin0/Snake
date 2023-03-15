@@ -48,8 +48,13 @@ int main()
 		}
 		Time::UpdateMS = currentMS;
 
+		BeginBatchDraw();
+
 		//Âß¼­
 		m.update();
+
+		EndBatchDraw();
+
 	}
 	return 0;
 }
