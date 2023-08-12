@@ -17,9 +17,9 @@ LPCTSTR Sprite::image_name(int value)
 {
 	switch (value)
 	{
-	case SNAKE_HEAD:return ".//images//snake.png";
-	case SNAKE_BODY:return ".//images//body.png";
-	case FOOD:return ".//images//food.png";
+	case SNAKE_HEAD:return "./images/snake.png";
+	case SNAKE_BODY:return "./images/body.png";
+	case FOOD:return "./images/food.png";
 	default:return 0;
 	}
 }
