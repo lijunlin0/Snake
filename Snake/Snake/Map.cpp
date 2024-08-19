@@ -173,7 +173,10 @@ void Map::Eat()
 	vector<Sprite>::iterator i = snake.begin();
 	i++;
 	snake.insert(i, body);
-	gap -= SNAKE_MOVE_GAP_SUB;
+	if (gap >= SNAKE_MOVE_GAP_MIN)
+	{
+		gap -= SNAKE_MOVE_GAP_SUB;
+	}
 	init_food();
 }
 void Map::update()

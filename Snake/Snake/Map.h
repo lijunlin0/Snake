@@ -26,7 +26,7 @@ public:
 	//蛇移动间隔
 	static const int SNAKE_MOVE_GAP = 300;
 	//蛇移动最小间隔
-	static const int SNAKE_MOVE_GAP_MIN = 50;
+	static const int SNAKE_MOVE_GAP_MIN = 100;
 	//进食后减少的间隔量
 	static const int SNAKE_MOVE_GAP_SUB = 20;
 	Map();
